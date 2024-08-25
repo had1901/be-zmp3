@@ -12,35 +12,39 @@ const checkPassword = async (password, hashPassword) => {
 } 
  
 const verifyToken = (req, res, next) => {
+    const paths = ['/auth/register', '/auth/login', '/auth/logout', '/auth/refreshToken' ]
     // const token = req.headers['authorization']?.split(' ')[1]
-    const token = req.cookies.token?.split(', ')[0]
-
-    console.log('verify-token ===',token)
-     if (!token) {
-        return res.status(403).json({
-            message: 'Token is not provided',
-            ec: -1,
-            isToken: false
-        })
-    }
-    jwt.verify(token, secretKey, (err, decoded) => {
-        if (err) {
-            if(err.name === 'TokenExpiredError') {
-                return res.status(401).json({
-                    message: 'Token has expired',
-                    ec: 1,
-                    isHasExpired: true
-                })
-            }
-            return res.status(403).json({
-                message: 'Token invalid',
-                ec: -1,
-                isValid: false
-            })
-        }
-        req.user = decoded
+    if(!paths.includes(req.originalUrl)) {
+        const token = req.cookies.token?.split(', ')[0]
+        if (!token) {
+           return res.status(403).json({
+               message: 'Token is not provided',
+               ec: -1,
+               isToken: false
+           })
+       }
+       jwt.verify(token, secretKey, (err, decoded) => {
+           if (err) {
+               if(err.name === 'TokenExpiredError') {
+                   return res.status(401).json({
+                       message: 'Token has expired',
+                       ec: 1,
+                       isHasExpired: true
+                   })
+               }
+               return res.status(403).json({
+                   message: 'Token invalid',
+                   ec: -1,
+                   isValid: false
+               })
+           }
+           req.user = decoded
+           next()
+       })
+    } else {
         next()
-    })
+    }
+    
 }
 
 const checkExpired = (req, res) => {

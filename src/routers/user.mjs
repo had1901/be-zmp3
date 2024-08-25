@@ -8,10 +8,10 @@ const router = express.Router()
 
 
 const userRouter = (app) => {
+    router.all('*', verifyToken)
     router.post('/register', authController.register)
     router.post('/login', authController.login)
     router.post('/logout', authController.logout)
-    router.get('/me', verifyToken, authController.me)
     router.post('/refreshToken', authController.refresh)
     
     // private route

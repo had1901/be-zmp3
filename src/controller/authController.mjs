@@ -338,7 +338,6 @@ const authController = {
     // upload image
     uploadFile: async (req, res) => {
         const file = req.file
-        console.log('file: ', file)
         try {
             if(!file) {
                 return res.status(404).json({
@@ -347,46 +346,39 @@ const authController = {
                 })
             }
           
-            const uploadResult = await cloudinary.uploader
-                .upload(file.path, 
-                    { 
+            const uploadResult = await cloudinary.uploader.upload(file.path, { 
                         resource_type: "auto",
                         public_id: path.parse(file.originalname).name,
                     })
-                .catch((error) => console.log('upload error: ', error))
             console.log('uploadResult: ', uploadResult)
             
-            if(!uploadResult) {
+            if(uploadResult) {
+                fs.unlinkSync(file.path) // remove file in folder
+                const optimizeUrl = cloudinary.url(uploadResult.public_id, {
+                        resource_type: "video",
+                        fetch_format: 'auto',
+                        quality: 'auto',
+                        crop: 'fill',
+                        gravity: 'auto',
+                    }
+                )
+                console.log('optimizeUrl: ', optimizeUrl)
+                return res.status(200).json({
+                    message: 'Uploading ok',
+                    ec: 0,
+                    data: { file, uploadResult, optimizeUrl }
+                })
+
+            } else {
                 return res.status(402).json({
                     message: 'Upload failed',
                     ec: 1,
                 })
             }
-            fs.unlinkSync(file.path) // remove file in folder
-
-            const optimizeUrl = cloudinary.url(uploadResult.public_id, 
-                {
-                    resource_type: "video",
-                    fetch_format: 'auto',
-                    quality: 'auto'
-                },
-                {
-                    crop: 'fill',
-                    gravity: 'auto',
-                   
-                }
-            )
-
-            console.log('optimizeUrl: ', optimizeUrl)
-            return res.status(200).json({
-                message: 'Uploading ok',
-                ec: 0,
-                data: { file, uploadResult, optimizeUrl }
-            })
 
         } catch(e) {
             if (req.file && req.file.path) {
-                fs.unlinkSync(req.file.path);
+                fs.unlinkSync(req.file.path)
             }
             return res.status(403).json({
                 message: 'Uploading image failed',
