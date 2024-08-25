@@ -11,7 +11,7 @@ const connectDatabase = async () => {
         define: {
           freezeTableName: true 
         },
-        logging: false
+        logging: false,
       },
     )
     await sequelize.authenticate();
