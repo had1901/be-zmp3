@@ -6,7 +6,7 @@ import db from '../models/index.js'
 
 const musicController = {
     getSongs: async (req, res) => {
-        const tabName = req.body.genre
+        const tabName = req.body?.genre
         try {
             const songs = await db.Song.findAll({ 
                 raw: true,
@@ -34,7 +34,6 @@ const musicController = {
         }
     },
     getListSong: async (req, res) => {
-        // const tabName = req.body.genre
         try {
             const listSong = await db.Song.findAll({ 
                 raw: true,
