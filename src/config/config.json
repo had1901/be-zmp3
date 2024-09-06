@@ -17,10 +17,10 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "mp3",
-    "host": "127.0.0.1",
+    "username": "ixsttcnz_mp3",
+    "password": "Duc1912001",
+    "database": "ixsttcnz_mp3",
+    "host": "localhost",
     "dialect": "mysql"
   }
 }
