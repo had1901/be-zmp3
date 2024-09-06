@@ -25,6 +25,8 @@ const musicController = {
             })
         } catch (err) {
             console.error(err)
+            console.error('Error:', err.message); // In thông báo lỗi chi tiết
+            console.error('Stack Trace:', err.stack)
             return res.status(500).json({
                 message: 'Connect did not work',
                 ec: -1,
@@ -32,7 +34,7 @@ const musicController = {
         }
     },
     getListSong: async (req, res) => {
-        const tabName = req.body.genre
+        // const tabName = req.body.genre
         try {
             const listSong = await db.Song.findAll({ 
                 raw: true,
@@ -52,6 +54,8 @@ const musicController = {
             })
         } catch (err) {
             console.error(err)
+            console.error('Error:', err.message); // In thông báo lỗi chi tiết
+            console.error('Stack Trace:', err.stack)
             return res.status(500).json({
                 message: 'Connect did not work',
                 ec: -1,
