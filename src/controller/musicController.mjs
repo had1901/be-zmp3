@@ -31,6 +31,34 @@ const musicController = {
             })
         }
     },
+    getListSong: async (req, res) => {
+        const tabName = req.body.genre
+        try {
+            const listSong = await db.Song.findAll({ 
+                raw: true,
+                limit: 3,
+                offset: 1
+            })
+            if(!listSong) {
+                return res.status(404).json({
+                    message: 'Song not found',
+                    ec: 1,
+                })
+            }
+            return res.status(200).json({
+                message: 'Song ok',
+                ec: 0,
+                dt: listSong
+            })
+        } catch (err) {
+            console.error(err)
+            return res.status(500).json({
+                message: 'Connect did not work',
+                ec: -1,
+            })
+        }
+    },
+   
 }
 
 

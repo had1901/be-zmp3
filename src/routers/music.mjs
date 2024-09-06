@@ -4,6 +4,7 @@ const router = express.Router()
 
 const musicRouter = (app) => {
     router.post('/songs', musicController.getSongs)
+    router.get('/list-song', musicController.getListSong)
    
     
     
