@@ -3,7 +3,7 @@
     "username": "root",
     "password": null,
     "database": "mp3",
-    "host": "127.0.0.1",
+    "host": "103.97.126.29",
     "dialect": "mysql",
     "define": {
       "freezeTableName": true 
@@ -13,14 +13,14 @@
     "username": "root",
     "password": null,
     "database": "mp3",
-    "host": "127.0.0.1",
+    "host": "103.97.126.29",
     "dialect": "mysql"
   },
   "production": {
     "username": "ixsttcnz_mp3",
     "password": "Duc1912001",
     "database": "ixsttcnz_mp3",
-    "host": "localhost",
+    "host": "103.97.126.29",
     "dialect": "mysql"
   }
 }
