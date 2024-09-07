@@ -95,8 +95,8 @@ const authController = {
                 }
                 res.setHeader('Set-Cookie', 
                     [
-                        `token=${access_token}; HttpOnly; Secure; Path=/`,
-                        `refreshToken=${refresh_token}; HttpOnly; Secure; Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; Path=/`
+                        `token=${access_token}; HttpOnly; Secure; SameSite:'none', Path=/`,
+                        `refreshToken=${refresh_token}; HttpOnly; Secure; SameSite:'none', Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; Path=/`
                     ])
                 const isCheckPassword = await checkPassword(data.password, user.password)
                 console.log('isCheckPassword: ===', isCheckPassword)
@@ -205,9 +205,9 @@ const authController = {
                 const newAccessToken = jwt.sign(newUser, access_secret_key, { expiresIn: '1m' })
                 const newRefreshToken = jwt.sign(newUser, refresh_secret_key, { expiresIn: '7d' })
                 
-                res.clearCookie('refreshToken', { httpOnly: true, secure: false, path: '/' })
-                res.cookie('token', newAccessToken, { httpOnly: true, secure: false, path: '/' })
-                res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: false, path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
+                res.clearCookie('refreshToken', { httpOnly:true, secure:false, path: '/' })
+                res.cookie('token', newAccessToken, { httpOnly:true, secure:false, sameSite:'none', path: '/' })
+                res.cookie('refreshToken', newRefreshToken, { httpOnly:true, secure:false, sameSite:'none', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
 
                 return res.status(200).json({
                     newAccessToken,
