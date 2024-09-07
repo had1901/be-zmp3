@@ -95,8 +95,8 @@ const authController = {
                 }
                 res.setHeader('Set-Cookie', 
                     [
-                        `token=${access_token}; HttpOnly; Secure; SameSite:'none', Path=/`,
-                        `refreshToken=${refresh_token}; HttpOnly; Secure; SameSite:'none', Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}; Path=/`
+                        `token=${access_token}; HttpOnly; Secure:false; SameSite:None; Path=/`,
+                        `refreshToken=${refresh_token}; HttpOnly; Secure:false; SameSite:None; Path=/; Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`
                     ])
                 const isCheckPassword = await checkPassword(data.password, user.password)
                 console.log('isCheckPassword: ===', isCheckPassword)
