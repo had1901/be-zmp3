@@ -193,8 +193,9 @@ console.log('environment', environment)
         try {
             if(!refreshToken) {
                 return res.status(404).json({
+                    ec: 1,
+                    isToken: false,
                     message: 'Token not found',
-                    ec: 1
                 })
             } 
             jwt.verify(refreshToken, refresh_secret_key, (err, user) => {
@@ -208,8 +209,7 @@ console.log('environment', environment)
                 const newAccessToken = jwt.sign(newUser, access_secret_key, { expiresIn: '1m' })
                 const newRefreshToken = jwt.sign(newUser, refresh_secret_key, { expiresIn: '7d' })
                 
-                // res.clearCookie('refreshToken', { httpOnly:true, secure:environment ? false : true, path: '/' })
-                
+                res.clearCookie('refreshToken', { httpOnly:true, secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/' })
                 res.cookie('token', newAccessToken, { httpOnly:true,  secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/' })
                 res.cookie('refreshToken', newRefreshToken, { httpOnly:true, secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
 
