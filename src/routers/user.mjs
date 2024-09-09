@@ -15,7 +15,7 @@ const userRouter = (app) => {
     router.post('/refreshToken', authController.refresh)
     
     // private route
-    router.post('/home', verifyToken, authController.home)
+    // router.post('/home', verifyToken, authController.home)
     router.post('/libraries', verifyToken, authController.libraries)
     router.post('/zing-chart', verifyToken, authController.zingChart)
     router.post('/upload', verifyToken, authController.upload)

@@ -13,11 +13,22 @@ const app = express()
 const port = process.env.PORT || 9999
 
 // middleware
-app.use(cors({ 
-  origin : process.env.ORIGIN_HOSTNAME,
-  credentials: true
-}
-))
+const whitelist = process.env.NODE_ENV === 'production' 
+  ? [process.env.ORIGIN_HOSTNAME]  
+  : ['http://localhost:3000']
+
+  const corsOptions = {
+    origin: function (origin, callback) {
+      if (whitelist.indexOf(origin) !== -1 || !origin) {
+        callback(null, true)
+      } else {
+        callback(new Error('Not allowed by CORS'))
+      }
+    },
+    credentials: true,
+  }  
+
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended : true }))

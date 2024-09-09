@@ -1,8 +1,10 @@
 import Sequelize from 'sequelize'
 import dotenv from 'dotenv'
-dotenv.config()
 
-console.log('HOST:', process.env.HOST);
+const environment = process.env.NODE_ENV || 'development'
+dotenv.config({ path: `.env.${environment}` })
+
+console.log('HOST:', process.env.HOST)
 
 const connectDatabase = async () => {
   try {

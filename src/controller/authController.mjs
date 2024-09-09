@@ -4,9 +4,10 @@ import jwt from  'jsonwebtoken'
 import { checkPassword } from '../middleware/auth.mjs'
 import dotenv from 'dotenv'
 import cloudinary from '../config/cloudinaryConfig.mjs'
-dotenv.config()
 import path from 'path'
 import fs from 'fs'
+const environment = process.env.NODE_ENV || 'development'
+dotenv.config({ path: `.env.${environment}` })
 
 const saltRounds = parseInt(process.env.SALT_ROUNDS)
 const access_secret_key = process.env.ACCESS_SECRET_KEY
@@ -53,10 +54,10 @@ const authController = {
         }
     },
     login: async (req, res) => {
-        const { data } = req.body
+        const { username, password } = req.body
         try {
             const user = await db.User.findOne({
-                where: { username: data.username },
+                where: { username: username },
                 attributes: ['id','username', 'password'],
                 include: [
                     { 
@@ -93,12 +94,14 @@ const authController = {
                     ...payload,
                     access_token: access_token,
                 }
+console.log('environment', environment)
+
                 res.setHeader('Set-Cookie', 
                     [
-                        `token=${access_token}; HttpOnly; Secure; SameSite=None; Path=/`,
-                        `refreshToken=${refresh_token}; HttpOnly; Secure; SameSite=None; Path=/; Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`
+                        `token=${access_token}; HttpOnly; ${environment === 'development' ? '' : 'Secure=true; SameSite=None'}; Path=/`,
+                        `refreshToken=${refresh_token}; HttpOnly; ${environment === 'development' ? '' : 'Secure=true; SameSite=None'}; Path=/; Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`
                     ])
-                const isCheckPassword = await checkPassword(data.password, user.password)
+                const isCheckPassword = await checkPassword(password, user.password)
                 console.log('isCheckPassword: ===', isCheckPassword)
 
                 if(!isCheckPassword) {
@@ -186,10 +189,10 @@ const authController = {
     },
     refresh: async (req, res) => {
         const refreshToken = req.cookies.refreshToken
-
+        console.log('refreshToken', refreshToken)
         try {
             if(!refreshToken) {
-                return res.status(403).json({
+                return res.status(404).json({
                     message: 'Token not found',
                     ec: 1
                 })
@@ -205,13 +208,15 @@ const authController = {
                 const newAccessToken = jwt.sign(newUser, access_secret_key, { expiresIn: '1m' })
                 const newRefreshToken = jwt.sign(newUser, refresh_secret_key, { expiresIn: '7d' })
                 
-                res.clearCookie('refreshToken', { httpOnly:true, secure:false, path: '/' })
-                res.cookie('token', newAccessToken, { httpOnly:true, secure:true, sameSite:'none', path: '/' })
-                res.cookie('refreshToken', newRefreshToken, { httpOnly:true, secure:true, sameSite:'none', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
+                // res.clearCookie('refreshToken', { httpOnly:true, secure:environment ? false : true, path: '/' })
+                
+                res.cookie('token', newAccessToken, { httpOnly:true,  secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/' })
+                res.cookie('refreshToken', newRefreshToken, { httpOnly:true, secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
 
                 return res.status(200).json({
                     newAccessToken,
-                    newRefreshToken
+                    newRefreshToken,
+                    ec: 0
                 })
             })
         } catch (err) {
@@ -224,24 +229,24 @@ const authController = {
     },
 
     // private routes
-    home: async (req, res) => {
-        const user = req.user
-        try{
-            return res.status(201).json({
-                message: 'Access route',
-                ec: 0,
-                isAccess: true
-            })
+    // home: async (req, res) => {
+    //     const user = req.user
+    //     try{
+    //         return res.status(201).json({
+    //             message: 'Access route',
+    //             ec: 0,
+    //             isAccess: true
+    //         })
 
-        }catch(e) {
-            return res.status(403).json({
-                message: 'Not enter this route',
-                ec: -1,
-                isAccess: false
-            })
+    //     }catch(e) {
+    //         return res.status(403).json({
+    //             message: 'Not enter this route',
+    //             ec: -1,
+    //             isAccess: false
+    //         })
 
-        }
-    },
+    //     }
+    // },
     libraries: async (req, res) => {
         const user = req.user
         try{

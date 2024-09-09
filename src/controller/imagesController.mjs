@@ -8,7 +8,6 @@ const imagesController = {
     getImageSlide: async (req, res) => {
         try {
             const imagesSlide = await db.Image_Slide.findAll({ raw: true})
-            console.log('imagesSlide: ', imagesSlide)
             if(!imagesSlide) {
                 return res.status(404).json({
                     message: 'Image-slide not found',
