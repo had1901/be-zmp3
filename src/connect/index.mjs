@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 const environment = process.env.NODE_ENV || 'development'
 dotenv.config({ path: `.env.${environment}` })
 
-console.log('HOST:', process.env.HOST)
+
 
 const connectDatabase = async () => {
   try {
@@ -21,12 +21,15 @@ const connectDatabase = async () => {
     await sequelize.authenticate();
     await sequelize.sync({ force: true })
     console.log('Đã đồng bộ models')
-    console.log('Connection database successfully.');
-        console.log('DB_NAME:', process.env.DB_NAME);
-        console.log('USERNAME_DB:', process.env.USERNAME_DB);
-        console.log('PASSWORD:', process.env.PASSWORD);
+    console.log('Connection database successfully.')
+        console.log({
+          'HOST:': process.env.HOST,
+          'DB_NAME:': process.env.DB_NAME,
+          'USERNAME_DB:': process.env.USERNAME_DB,
+          'PASSWORD:': process.env.PASSWORD,
+        })
   } catch (error) {
-    console.error('Can not connect to the database:', error);
+    console.error('Can not connect to the database:', error)
   }
 }
 

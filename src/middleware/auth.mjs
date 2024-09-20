@@ -16,7 +16,6 @@ const verifyToken = (req, res, next) => {
     const paths = ['/auth/register', '/auth/login', '/auth/logout', '/auth/refreshToken' ]
     if(!paths.includes(req.originalUrl)) {
         const token = req.cookies.token?.split(', ')[0]
-        console.log('token----------', token)
         if (!token) {
            return res.status(403).json({
                message: 'Token is not provided',

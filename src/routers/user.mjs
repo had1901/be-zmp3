@@ -3,6 +3,7 @@ import db from '../models/index.js'
 import authController from '../controller/authController.mjs'
 import { verifyToken } from '../middleware/auth.mjs'
 import upload from '../middleware/uploadCloudinary.mjs'
+import userController from '../controller/userController.mjs'
 const router = express.Router()
 
 
@@ -13,6 +14,13 @@ const userRouter = (app) => {
     router.post('/login', authController.login)
     router.post('/logout', authController.logout)
     router.post('/refreshToken', authController.refresh)
+
+    // user
+    router.get('/admin/get-users', userController.getUsers)
+    router.post('/admin/create-user', userController.createUser)
+    router.put('/admin/update-user/:id', )
+    router.delete('/admin/delete-user/:id', userController.deleteUsers)
+
     
     // private route
     // router.post('/home', verifyToken, authController.home)
