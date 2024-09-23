@@ -64,6 +64,7 @@ const checkExpired = (req, res) => {
        next()
    })
 }
+
 const verifyTokenLogout = (req, res, next) => {
     const token = req.cookies.token?.split(', ')[0]
     if(!token) {
@@ -87,10 +88,14 @@ const verifyTokenLogout = (req, res, next) => {
     })
 }
 
-
+const hashPassword = async (password, saltRounds) => {
+    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    return hashedPassword
+}
 
 export {
     verifyToken,
     verifyTokenLogout,
-    checkPassword
+    checkPassword,
+    hashPassword
 }

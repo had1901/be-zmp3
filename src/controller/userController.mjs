@@ -1,22 +1,35 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import db from '../models/index.js'
+import { hashPassword } from '../middleware/auth.mjs'
 
+const environment = process.env.NODE_ENV || 'development'
+dotenv.config({ path: `.env.${environment}` })
 
+const saltRounds = parseInt(process.env.SALT_ROUNDS)
 
 const userController = {
     getUsers: async (req, res) => {
         try {
             const users = await db.User.findAll({
-                attributes: ['id','username', 'password'],
+                attributes: ['id','username', 'password', 'groupID'],
                 include: [
                     { 
                         model: db.Group ,
                         attributes: ['group_name'],
+                        order: [
+                            ['group_name', 'DESC'],
+                        ],
                     },
-                ]
+                ],
             })
-            console.log(users)
+            const countUser = await db.User.findAndCountAll({
+                attributes: ['id','username', 'password', 'groupID'],
+                offset: 0,
+                limit: 2,
+                raw: true
+            })
+            console.log({ row: countUser.rows?.length, count: countUser.count})
             if(!users) {
                 return res.status(404).json({
                     message: 'Song album not found',
@@ -26,7 +39,8 @@ const userController = {
             return res.status(200).json({
                 message: 'Song album ok',
                 ec: 0,
-                dt: users
+                dt: users,
+                count: countUser
             })
         } catch (err) {
             console.error(err)
@@ -37,34 +51,40 @@ const userController = {
         }
     },
     createUser: async (req, res) => {
-        const data = req.body
-        console.log('data', data)
-        return res.status(201).json({
-            mess: 'create ok'
-        })
-        // try {
-        //     const userDeleted = await db.User.create({
-        //         where: { id: id }
-        //     })
-        //     console.log(userDeleted)
-        //     if(!userDeleted) {
-        //         return res.status(404).json({
-        //             message: 'User not found',
-        //             ec: 1,
-        //         })
-        //     }
-        //     return res.status(200).json({
-        //         message: 'Deleted',
-        //         ec: 0,
-        //         dt: id
-        //     })
-        // } catch (err) {
-        //     console.error(err)
-        //     return res.status(500).json({
-        //         message: 'Connect did not work',
-        //         ec: -1,
-        //     })
-        // }
+        const {username, password, role} = req.body
+        console.log(username, password, role)
+        try {
+            // check user exists before creating
+            const checkUserExist = await db.User.findOne({
+                where: { username: username },
+            })
+
+            if(checkUserExist) {
+                return res.status(401).json({
+                    message: 'Người dùng đã tồn tại',
+                    ec: 1,
+                })
+            }
+            // create a new user
+            const hashPass = await hashPassword(password, saltRounds) 
+            await db.User.create({
+                username: username,
+                password: hashPass,
+                groupID: role || 1,
+            })
+            
+            return res.status(200).json({
+                message: 'Tạo tài khoản thành công',
+                ec: 0,
+                dt: null
+            })
+        } catch (err) {
+            console.error(err)
+            return res.status(500).json({
+                message: 'Connect did not work',
+                ec: -1,
+            })
+        }
     },
     deleteUsers: async (req, res) => {
         const { id } = req.params
