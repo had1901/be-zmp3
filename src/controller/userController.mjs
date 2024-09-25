@@ -1,11 +1,11 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import db from '../models/index.js'
+import bcrypt from 'bcrypt'
 import { hashPassword } from '../middleware/auth.mjs'
 
 const environment = process.env.NODE_ENV || 'development'
 dotenv.config({ path: `.env.${environment}` })
-
 const saltRounds = parseInt(process.env.SALT_ROUNDS)
 
 const userController = {
@@ -21,7 +21,10 @@ const userController = {
                             ['group_name', 'DESC'],
                         ],
                     },
+                    
                 ],
+                raw: true,
+                nest: true,
             })
             const countUser = await db.User.findAndCountAll({
                 attributes: ['id','username', 'password', 'groupID'],
@@ -86,7 +89,41 @@ const userController = {
             })
         }
     },
-    deleteUsers: async (req, res) => {
+    updateUser: async (req, res) => {
+        const { id } = req.params
+        const {password, role} = req.body
+        try {
+            const hashPassword = await bcrypt.hash(password, saltRounds)
+            console.log('hashPassword', hashPassword)
+
+            const [updateDeleted] = await db.User.update({
+                password: hashPassword,
+                groupID: role
+            },
+            { where: { id: id }},
+            
+            )
+            console.log('updateDeleted', updateDeleted)
+            if(updateDeleted === 0) {
+                return res.status(404).json({
+                    message: 'User not found',
+                    ec: 1,
+                })
+            }
+            return res.status(200).json({
+                message: 'Updated successfully',
+                ec: 0,
+                dt: id
+            })
+        } catch (err) {
+            console.error(err)
+            return res.status(500).json({
+                message: 'Connect did not work',
+                ec: -1,
+            })
+        }
+    },
+    deleteUser: async (req, res) => {
         const { id } = req.params
         console.log('deleteUsers', id)
         try {

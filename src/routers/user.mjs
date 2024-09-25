@@ -18,8 +18,8 @@ const userRouter = (app) => {
     // user
     router.get('/admin/get-users', userController.getUsers)
     router.post('/admin/create-user', userController.createUser)
-    router.put('/admin/update-user/:id', )
-    router.delete('/admin/delete-user/:id', userController.deleteUsers)
+    router.put('/admin/update-user/:id', userController.updateUser)
+    router.delete('/admin/delete-user/:id', userController.deleteUser)
 
     
     // private route
