@@ -1,14 +1,13 @@
 import express  from 'express'
-import musicController from '../controller/musicController.mjs';
+import themeController from '../controller/themeController.mjs';
 const router = express.Router()
 
 const themeRouter = (app) => {
-    router.get('/list-theme', musicController.getListTheme)
-    router.post('/create-theme', musicController.createTheme)
-    router.put('/update-theme/:id', musicController.updateTheme)
-    router.delete('/delete-theme/:id', musicController.deleteTheme)
+    router.get('/list', themeController.getListTheme)
+    router.post('/create', themeController.createTheme)
+    router.put('/update/:id', themeController.updateTheme)
+    router.delete('/delete/:id', themeController.deleteTheme)
    
-    
     
     return app.use('/theme', router)
     

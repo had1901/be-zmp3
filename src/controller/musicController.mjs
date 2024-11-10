@@ -63,7 +63,6 @@ const musicController = {
     },
     createSong: async (req, res) => {
         const {title, artist, genre, duration, thumbnail, releaseDate, url, url_mp4} = req.body
-        console.log(req.body)
         try {
             if(title, artist, genre, duration, thumbnail, releaseDate, url, url_mp4) {
                 await db.User.create({
@@ -78,9 +77,7 @@ const musicController = {
                     genreId: 1,
                     url: url,
                     url_mp4: url_mp4,
-                    
                 })
-                
                 return res.status(200).json({
                     message: 'Tạo bài hát thành công',
                     ec: 0,
@@ -149,11 +146,10 @@ const musicController = {
     deleteSong: async (req, res) => {
         const { id } = req.params
         try {
-            const songDeleted = await db.Song.destroy({
+            const deletedSong = await db.Song.destroy({
                 where: { id: id }
             })
-            console.log(songDeleted)
-            if(!songDeleted) {
+            if(!deletedSong) {
                 return res.status(404).json({
                     message: 'Song not found',
                     ec: 1,

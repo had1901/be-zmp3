@@ -1,12 +1,14 @@
 import express from 'express'
 import cors from 'cors'
-import musicRouter from './routers/music.mjs'
-import userRouter from './routers/user.mjs'
+import cookieParser from 'cookie-parser'
 import connection from './connect/index.mjs'
-import dotenv from 'dotenv'
-import cookieParser from 'cookie-parser';
+
+import musicRouter from './routers/music.mjs'
 import imagesRouter from './routers/images.mjs'
+import userRouter from './routers/user.mjs'
 import albumRouter from './routers/album.mjs'
+import themeRouter from './routers/theme.mjs'
+import dotenv from 'dotenv'
 dotenv.config()
 
 const app = express()
@@ -43,6 +45,7 @@ musicRouter(app)
 userRouter(app)
 imagesRouter(app)
 albumRouter(app)
+themeRouter(app)
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'API is running' })

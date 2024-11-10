@@ -55,7 +55,6 @@ const userController = {
     },
     createUser: async (req, res) => {
         const {username, password, role} = req.body
-        console.log(username, password, role)
         try {
             // check user exists before creating
             const checkUserExist = await db.User.findOne({
@@ -94,16 +93,12 @@ const userController = {
         const {password, role} = req.body
         try {
             const hashPassword = await bcrypt.hash(password, saltRounds)
-            console.log('hashPassword', hashPassword)
-
             const [updateDeleted] = await db.User.update({
-                password: hashPassword,
-                groupID: role
-            },
-            { where: { id: id }},
-            
+                    password: hashPassword,
+                    groupID: role
+                },
+                { where: { id: id }},
             )
-            console.log('updateDeleted', updateDeleted)
             if(updateDeleted === 0) {
                 return res.status(404).json({
                     message: 'User not found',
@@ -125,13 +120,11 @@ const userController = {
     },
     deleteUser: async (req, res) => {
         const { id } = req.params
-        console.log('deleteUsers', id)
         try {
-            const userDeleted = await db.User.destroy({
+            const deletedUser = await db.User.destroy({
                 where: { id: id }
             })
-            console.log(userDeleted)
-            if(!userDeleted) {
+            if(!deletedUser) {
                 return res.status(404).json({
                     message: 'User not found',
                     ec: 1,

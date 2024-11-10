@@ -5,10 +5,10 @@ const router = express.Router()
 const musicRouter = (app) => {
     router.post('/songs', musicController.getSongs)
 
-    router.get('/list-song', musicController.getListSong)
-    router.post('/create-song', musicController.createSong)
-    router.put('/update-song/:id', musicController.updateSong)
-    router.delete('/delete-song/:id', musicController.deleteSong)
+    router.get('/list', musicController.getListSong)
+    router.post('/create', musicController.createSong)
+    router.put('/update/:id', musicController.updateSong)
+    router.delete('/delete/:id', musicController.deleteSong)
    
     
     
