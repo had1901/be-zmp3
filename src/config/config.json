@@ -10,9 +10,9 @@
     }
   },
   "test": {
-    "username": "ixsttcnz_mp3",
-    "password": "Duc1912001",
-    "database": "ixsttcnz_mp3",
+    "username": "psmzxsev_zing-mp3",
+    "password": "Duc1912001!",
+    "database": "psmzxsev_zing-mp3",
     "host": "103.97.126.29",
     "dialect": "mysql",
     "define": {
@@ -20,9 +20,9 @@
     }
   },
   "production": {
-    "username": "ixsttcnz_mp3",
-    "password": "Duc1912001",
-    "database": "ixsttcnz_mp3",
+    "username": "psmzxsev_zing-mp3",
+    "password": "Duc1912001!",
+    "database": "psmzxsev_zing-mp3",
     "host": "103.97.126.29",
     "dialect": "mysql",
     "define": {
