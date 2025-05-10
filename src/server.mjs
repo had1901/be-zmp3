@@ -15,12 +15,10 @@ const app = express()
 const port = process.env.PORT || 9999
 
 // middleware
-const whitelist = process.env.NODE_ENV === 'production' 
-  ? [process.env.ORIGIN_HOSTNAME]  
-  : ['http://localhost:3000']
+const whitelist = process.env.NODE_ENV === 'production' ? process.env.ORIGIN_HOSTNAME : 'http://localhost:3000'
 
   const corsOptions = {
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (whitelist.indexOf(origin) !== -1 || !origin) {
         callback(null, true)
       } else {

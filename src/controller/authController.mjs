@@ -17,7 +17,6 @@ const refresh_secret_key = process.env.REFRESH_SECRET_KEY
 const authController = {
     register: async (req, res) => {
         const { data } = req.body
-        console.log('Request ===', data )
         try {
 
             // check user exists before creating
@@ -89,12 +88,10 @@ const authController = {
                 
                 const access_token = jwt.sign(payload, access_secret_key, { expiresIn: '1m' })
                 const refresh_token = jwt.sign(payload, refresh_secret_key, { expiresIn: '7d' })
-                console.log('login: ===', user)
                 const result = {
                     ...payload,
                     access_token: access_token,
                 }
-console.log('environment', environment)
 
                 res.setHeader('Set-Cookie', 
                     [
@@ -102,7 +99,6 @@ console.log('environment', environment)
                         `refreshToken=${refresh_token}; HttpOnly; ${environment === 'development' ? '' : 'Secure=true; SameSite=None'}; Path=/; Expires=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString()}`
                     ])
                 const isCheckPassword = await checkPassword(password, user.password)
-                console.log('isCheckPassword: ===', isCheckPassword)
 
                 if(!isCheckPassword) {
                     return res.status(401).json({
@@ -189,7 +185,6 @@ console.log('environment', environment)
     },
     refresh: async (req, res) => {
         const refreshToken = req.cookies.refreshToken
-        console.log('refreshToken', refreshToken)
         try {
             if(!refreshToken) {
                 return res.status(404).json({
@@ -208,10 +203,13 @@ console.log('environment', environment)
                 const { exp, iat, ...newUser } = user
                 const newAccessToken = jwt.sign(newUser, access_secret_key, { expiresIn: '1m' })
                 const newRefreshToken = jwt.sign(newUser, refresh_secret_key, { expiresIn: '7d' })
+
+                let environmentSecure = environment === 'development' ? false : true
+                let environmentSameSite = environment === 'development' ? 'Strict' : 'None'
                 
-                res.clearCookie('refreshToken', { httpOnly:true, secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/' })
-                res.cookie('token', newAccessToken, { httpOnly:true,  secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/' })
-                res.cookie('refreshToken', newRefreshToken, { httpOnly:true, secure:environment === 'development' ? false : true, sameSite:environment === 'development' ? 'Strict' : 'None', path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
+                res.clearCookie('refreshToken', { httpOnly:true, secure:environmentSecure, sameSite:environmentSameSite, path: '/' })
+                res.cookie('token', newAccessToken, { httpOnly:true,  secure:environmentSecure, sameSite:environmentSameSite, path: '/' })
+                res.cookie('refreshToken', newRefreshToken, { httpOnly:true, secure:environmentSecure, sameSite:environmentSameSite, path: '/', maxAge: 7 * 24 * 60 * 60 * 1000 })
 
                 return res.status(200).json({
                     newAccessToken,

@@ -20,7 +20,6 @@ const connectDatabase = async () => {
     )
     await sequelize.authenticate();
     await sequelize.sync({ force: true })
-    console.log('Đã đồng bộ models')
     console.log('Connection database successfully.')
         console.log({
           'HOST:': process.env.HOST,

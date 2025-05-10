@@ -10,10 +10,7 @@ const musicRouter = (app) => {
     router.put('/update/:id', musicController.updateSong)
     router.delete('/delete/:id', musicController.deleteSong)
    
-    
-    
     return app.use('/music', router)
-    
 }
 
 export default musicRouter
